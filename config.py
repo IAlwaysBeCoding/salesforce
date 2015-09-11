@@ -1,0 +1,5 @@
+ES_HOST = '45.55.56.107'
+ES_PORT = '9200'
+ES_INDEX = 'salesforce'
+SF_CLIENT_ID = ''
+SF_CLIENT_SECRET = ''
