@@ -78,12 +78,16 @@ class SFMonitor(object):
             raise Exception('Could not find query for object ' \
                             ' name:{n}'.format(n=object_name))
 
+        topic = self.TOPICS.get(object_name,None)
+        if topic is None:
+            raise Exception('Cannot find appropriate callback for ' \
+                            'topic:{t}')
+
         params = {
-                    'Name':object_name,
+                    'Name':topic,
                     'Query':query,
                     'ApiVersion':self.version
                   }
-        print 'query is:{q}'.format(q=query)
 
         try:
             PushTopic.register(push_topic=params,
@@ -91,19 +95,13 @@ class SFMonitor(object):
                                instance=self.instance)
         except SalesforceMalformedRequest as exc:
 
-            print exc.content
             is_duplicate = self._has_duplicate_push_topic(data=exc.content)
             if not is_duplicate:
                 raise Exception('Failed creating push topic for ' \
                                 'object name:{o}'.format(o=object_name))
 
         else:
-            topic = self.TOPICS.get(object_name,None)
-            if topic is None:
-                raise Exception('Cannot find appropriate callback for ' \
-                                'topic:{t}')
-
-
+            self.client.register('/topic/{topic}'.format(topic=topic))
     def start(self):
 
         self.client.start()
@@ -114,7 +112,7 @@ class SFMonitor(object):
 if __name__ == '__main__':
     def cb(data):
         print 'this is the returned data:{d}'.format(d=data)
-    access_token = '00D610000006S9H!AREAQCAJwEns12CQg2evcjBW1DBSz3SunnojQGu__naslc_SDWooL7B91gdfX9OX2sFOT8ZvwJ9y8BPSpWWhvxnKwFf43SYI'
+    access_token ='00D610000006S9H!AREAQPtUcMFCS_7yZelhHwZnqkhUFJFdY8nEtwYY2t45dH752JHzw0LTfdjmBd7DfzQfFoXVL8Y6SIv5gy4gQW65EKoYHkF_'
     instance = 'https://na34.salesforce.com'
     version = 31.0
     params = {'access_token':access_token,
